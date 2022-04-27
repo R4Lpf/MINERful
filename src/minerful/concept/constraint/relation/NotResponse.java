@@ -21,6 +21,18 @@ public class NotResponse extends NotChainResponse {
     public String getLTLpfExpressionTemplate() {
     	return "G(%1$s -> !X(F(%2$s)))"; // G(a -> !X(F(b)))
     }
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s]*([%1$s].*[%2$s])*[^%1$s]*";
+		// [^a]*(a.*b)*[^a]*
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+
+		return "G(%1$s -> X(F(%2$s)))"; // G(a -> X(F(b)))
+	}
 	
 	protected NotResponse() {
 		super();

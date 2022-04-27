@@ -18,6 +18,16 @@ public class AtLeast2 extends AtLeast1 {
     public String getLTLpfExpressionTemplate() {
     	return "F(%1$s & X(F(%1$s)))"; // F(a & X(F(a)))
     }
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s]*([%1$s][^%1$s]*){0,1}[^%1$s]*";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "G(%1$s -> X(G(!%1$s)))"; // G(a -> X(G(!a)))
+	}
  
     protected AtLeast2() {
     	super();

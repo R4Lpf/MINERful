@@ -26,7 +26,7 @@ public class SequenceResponse21 extends Constraint {
 	@Override
 	public String getRegularExpressionTemplate() {
 		return "([^%1$s]*)|([^%1$s]*%1$s[^%2$s]*)|([^%1$s]*%1$s[^%2$s]*%2$s[^%3$s]*%3$s[^%1$s]*)";
-				// "([^A]*)|([^A]*A[^B]*)|([^A]*A[^B]*B[^X]*X[^A]*)";
+		// "([^A]*)|([^A]*A[^B]*)|([^A]*A[^B]*B[^X]*X[^A]*)";
 	}
 
 	@Override
@@ -121,6 +121,26 @@ public class SequenceResponse21 extends Constraint {
 	@Override
 	public String getLTLpfExpressionTemplate() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "([^%1$s]*)|([^%1$s]*%1$s[^%2$s]*)|([^%1$s]*%1$s[^%2$s]*%2$s[^%3$s]*%3$s[^%1$s]*)";
+		// "([^A]*)|([^A]*A[^B]*)|([^A]*A[^B]*B[^X]*X[^A]*)";
+	}
+
+	@Override
+	public String getNegativeRegularExpression() {
+		return String.format(this.getRegularExpressionTemplate(),
+				this.parameters.get(0).toPatternString(),
+				this.parameters.get(1).toPatternString(),
+				this.parameters.get(2).toPatternString()
+		);
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
 		return null;
 	}
 }

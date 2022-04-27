@@ -151,6 +151,16 @@ public abstract class RelationConstraint extends Constraint {
 	public String getLTLpfExpression() {
 		return String.format(this.getLTLpfExpressionTemplate(), base.toLTLpfString(), implied.toLTLpfString());
 	}
+
+	@Override
+	public String getNegativeRegularExpression() {
+		return String.format(this.getNegativeRegularExpressionTemplate(), base.toPatternString(), implied.toPatternString());
+	}
+
+	@Override
+	public String getNegativeLTLpfExpression() {
+		return String.format(this.getNegativeLTLpfExpressionTemplate(), base.toLTLpfString(), implied.toLTLpfString());
+	}
 	
 	public abstract ConstraintImplicationVerse getImplicationVerse();
 	
@@ -218,6 +228,12 @@ public abstract class RelationConstraint extends Constraint {
 
 	@Override
 	public String getRegularExpressionTemplate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
 		// TODO Auto-generated method stub
 		return null;
 	}

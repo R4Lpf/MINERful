@@ -20,6 +20,17 @@ public class Exactly1 extends AtLeast1 { // Multiple inheritance is not allowed 
     	return "!%1$s U (%1$s & X(G(!%1$s)))"; // !a U (a & X(G(!a)))
     }
 
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "(?![^%1$s]*([%1$s][^%1$s]*){1,1}[^%1$s]*)";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+//    	return "G((F(%1$s) | O(%1$s)) & (%1$s -> X(G(!%1$s))))"; // G((F(a) | O(a)) & (a -> X(G(!a))))
+		return "%1$s U (!%1$s & X(G(%1$s)))"; // !a U (a & X(G(!a)))
+	}
+
 	protected Exactly1() {
     	super();
     }

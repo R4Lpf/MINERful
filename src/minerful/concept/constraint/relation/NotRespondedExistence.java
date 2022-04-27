@@ -21,6 +21,16 @@ public class NotRespondedExistence extends NotSuccession {
     public String getLTLpfExpressionTemplate() {
     	return "G(%1$s -> !(X(F(%2$s)) | Y(O(%2$s))))"; // G(a -> !(X(F(b)) | Y(O(b))))
     }
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s]*(([%1$s].*[%2$s].*)|([%2$s].*[%1$s].*))*[^%1$s]*";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "G(%1$s -> (X(F(%2$s)) | Y(O(%2$s)))"; // G(a -> (X(F(b)) | Y(O(b)))
+	}
   	
 	protected NotRespondedExistence() {
 		super();

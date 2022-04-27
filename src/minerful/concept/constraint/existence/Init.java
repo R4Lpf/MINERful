@@ -22,6 +22,16 @@ public class Init extends AtLeast1 {
     public String getLTLpfExpressionTemplate() {
     	return "%1$s"; // a
     }
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s].*";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "!%1$s"; // a
+	}
 	
     protected Init() {
     	super();

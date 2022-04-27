@@ -21,6 +21,16 @@ public class NotPrecedence extends NotChainPrecedence {
     public String getLTLpfExpressionTemplate() {
     	return "G(%2$s -> !Y(H(%1$s)))"; // G(b -> !Y(H(a)))
     }
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s]*([%2$s].*[%1$s])*[^%1$s]*"; // [^b]*([a].*[b])*[^b]*
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "G(%1$s -> Y(O(%2$s)))"; // G(b -> Y(O(a)))
+	}
 	
 	protected NotPrecedence() {
 		super();

@@ -21,7 +21,18 @@ public class ExclusiveChoice extends MutualRelationConstraint {
     public String getLTLpfExpressionTemplate() {
     	return "G( (F(%1$s) | O(%1$s)) <-> !(F(%2$s) | O(%2$s)) )"; // G( (F(a) | O(a)) <-> !(F(b) | O(b)) )
     }
-  	
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s%2$s]*([%1$s%2$s][^%1$s%2$s]*){1,}[^%1$s%2$s]*";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "F( a | b )"; // F( a | b )
+	}
+
+
 	protected ExclusiveChoice() {
 		super();
 	}

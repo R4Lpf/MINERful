@@ -3,14 +3,7 @@ package minerful.concept;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -91,6 +84,13 @@ public class ProcessModel implements PropertyChangeListener {
 		return buildAutomatonByBondHeuristic();
 	}
 
+	public Automaton buildNegativeAutomaton() {
+		return buildNegativeAutomatonByBondHeuristic();
+	}
+	public Automaton buildNegativeAutomaton(String lac) {
+		return buildNegativeAutomatonByBondHeuristic(lac);
+	}
+
 	public Automaton buildAlphabetAcceptingAutomaton() {
 		return AutomatonFactory.fromRegularExpressions(new ArrayList<String>(0), this.taskCharArchive.getIdentifiersAlphabet());
 	}
@@ -135,6 +135,35 @@ public class ProcessModel implements PropertyChangeListener {
 		regularExpressions = new ArrayList<String>(constraints.size());
 		for (Constraint con : constraints) {
 			regularExpressions.add(con.getRegularExpression());
+		}
+		return AutomatonFactory.fromRegularExpressions(regularExpressions, this.taskCharArchive.getIdentifiersAlphabet());
+	}
+
+	protected Automaton buildNegativeAutomatonByBondHeuristic() {
+		Collection<String> regularExpressions = null;
+		Collection<Constraint> constraints = LinearConstraintsIndexFactory.getAllUnmarkedConstraintsSortedByBondsSupportFamilyConfidenceInterestFactorHierarchyLevel(this.bag);
+		regularExpressions = new ArrayList<String>(constraints.size());
+		for (Constraint con : constraints) {
+			String type = con.type;
+			regularExpressions.add(con.getNegativeRegularExpression());
+		}
+		return AutomatonFactory.fromRegularExpressions(regularExpressions, this.taskCharArchive.getIdentifiersAlphabet());
+	}
+
+	protected Automaton buildNegativeAutomatonByBondHeuristic(String lac) {
+		Collection<String> regularExpressions = null;
+		Collection<Constraint> constraints = LinearConstraintsIndexFactory.getAllUnmarkedConstraintsSortedByBondsSupportFamilyConfidenceInterestFactorHierarchyLevel(this.bag);
+		regularExpressions = new ArrayList<String>(constraints.size());
+		String[] lacobj = Arrays.stream(lac.split(",")).map(String::trim).toArray(String[]::new);
+		List<String> leftAloneConstraints = Arrays.asList(lacobj);
+		for (Constraint con : constraints) {
+			String type = con.type;
+			if (leftAloneConstraints.contains(type)){
+				regularExpressions.add(con.getRegularExpression());
+			}
+			else {
+				regularExpressions.add(con.getNegativeRegularExpression());
+			}
 		}
 		return AutomatonFactory.fromRegularExpressions(regularExpressions, this.taskCharArchive.getIdentifiersAlphabet());
 	}

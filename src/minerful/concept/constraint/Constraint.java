@@ -506,12 +506,25 @@ public abstract class Constraint implements Comparable<Constraint> {
 	public String getLTLpfExpression() {
 		return String.format(this.getLTLpfExpressionTemplate(), this.base.toLTLpfString());
 	}
-	
+
+	public String getNegativeRegularExpression() {
+		return String.format(this.getNegativeRegularExpressionTemplate(), this.base.toPatternString(true));
+	}//
+
+	public String getNegativeLTLpfExpression() {
+		return String.format(this.getNegativeLTLpfExpressionTemplate(), this.base.toLTLpfString());
+	}//
+
+
 	public abstract TaskCharSet getImplied();
 
 	public abstract String getRegularExpressionTemplate();
 	
 	public abstract String getLTLpfExpressionTemplate();
+
+	public abstract String getNegativeRegularExpressionTemplate();//
+
+	public abstract String getNegativeLTLpfExpressionTemplate();//
 
 	public boolean isBranched() {
 		return	(this.getBase() != null && this.getBase().size() > 1)

@@ -38,12 +38,22 @@ public class LogMakerParameters extends ParamsManager {
 	public static final String SIZE_PARAM_NAME = "oLL";
 	public static final String MAX_LEN_PARAM_NAME = "oLM";
 	public static final String MIN_LEN_PARAM_NAME = "oLm";
+	// added
+	public static final String SIZE_NEGATIVE_PARAM_NAME = "oLN";
+	// added
+	public static final String LEFT_ALONE_CONSTRAINTS = "LAC";
 
     public static final Long DEFAULT_SIZE = 100L;
+	// added
+	public static final Long DEFAULT_NEGATIVE_SIZE = 0L;
+	// added
+	public static final String  DEFAULT_LEFT_ALONE_CONSTRAINTS = "";
     public static final Integer DEFAULT_MIN_TRACE_LENGTH = 0;
     public static final Integer DEFAULT_MAX_TRACE_LENGTH = 100;
 	public static final Encoding DEFAULT_OUTPUT_ENCODING = Encoding.xes;
-    
+
+
+
 	/**
 	 * Minimum number of events that have to be included in the generated traces.
 	 */
@@ -59,15 +69,23 @@ public class LogMakerParameters extends ParamsManager {
     /**
      * File in which the generated event log is going to be stored.
      */
+
+	// added
+	public Long negativesInLog;
+	// added
+	public String leftAloneConstraints;
+
     public File outputLogFile;
     /**
      * Event log encoding (see {@link Encoding #Encoding}).
      */
     public LogMakerParameters.Encoding outputEncoding;
-    
+
+    // modified
     public LogMakerParameters () {
-    	this(DEFAULT_MIN_TRACE_LENGTH, DEFAULT_MAX_TRACE_LENGTH, DEFAULT_SIZE, null, DEFAULT_OUTPUT_ENCODING);
+    	this(DEFAULT_MIN_TRACE_LENGTH, DEFAULT_MAX_TRACE_LENGTH, DEFAULT_SIZE, DEFAULT_NEGATIVE_SIZE, DEFAULT_LEFT_ALONE_CONSTRAINTS,null, DEFAULT_OUTPUT_ENCODING);
     }
+
 
 	public LogMakerParameters(
 			Integer minEventsPerTrace, Integer maxEventsPerTrace, Long tracesInLog,
@@ -79,6 +97,43 @@ public class LogMakerParameters extends ParamsManager {
 		this.outputLogFile = outputLogFile;
 		this.outputEncoding = outputEncoding;
 	}
+	// added
+	public LogMakerParameters( //###
+			Integer minEventsPerTrace, Integer maxEventsPerTrace, Long tracesInLog, Long negativesInLog,
+			File outputLogFile, Encoding outputEncoding) {
+		super();
+		this.minEventsPerTrace = minEventsPerTrace;
+		this.maxEventsPerTrace = maxEventsPerTrace;
+		this.tracesInLog = tracesInLog;
+		this.outputLogFile = outputLogFile;
+		this.outputEncoding = outputEncoding;
+		this.negativesInLog = negativesInLog;
+	}
+
+	// added
+	public LogMakerParameters( //###
+			Integer minEventsPerTrace, Integer maxEventsPerTrace, Long tracesInLog, Long negativesInLog, String leftAloneConstraints,
+			File outputLogFile, Encoding outputEncoding) {
+		super();
+		this.minEventsPerTrace = minEventsPerTrace;
+		this.maxEventsPerTrace = maxEventsPerTrace;
+		this.tracesInLog = tracesInLog;
+		this.outputLogFile = outputLogFile;
+		this.outputEncoding = outputEncoding;
+		this.negativesInLog = negativesInLog;
+		this.leftAloneConstraints = leftAloneConstraints;
+	}
+
+	// added
+	public LogMakerParameters( //###
+			Integer minEventsPerTrace, Integer maxEventsPerTrace, Long tracesInLog, Long negativesInLog) {
+		this(minEventsPerTrace, maxEventsPerTrace, tracesInLog, negativesInLog,null, null);
+	}
+	// added
+	public LogMakerParameters( //###
+		    Integer minEventsPerTrace, Integer maxEventsPerTrace, Long tracesInLog, Long negativesInLog, String leftAloneConstraints) {
+		this(minEventsPerTrace, maxEventsPerTrace, tracesInLog, negativesInLog, leftAloneConstraints,null, null);
+	}
 
 	public LogMakerParameters(
 			Integer minEventsPerTrace, Integer maxEventsPerTrace, Long tracesInLog,
@@ -88,7 +143,7 @@ public class LogMakerParameters extends ParamsManager {
 
 	public LogMakerParameters(
 			Integer minEventsPerTrace, Integer maxEventsPerTrace, Long tracesInLog) {
-		this(minEventsPerTrace, maxEventsPerTrace, tracesInLog, null, null);
+		this(minEventsPerTrace, maxEventsPerTrace, tracesInLog, null, null, null, null);
 	}
 
 
@@ -114,9 +169,14 @@ public class LogMakerParameters extends ParamsManager {
         				line.getOptionValue(MAX_LEN_PARAM_NAME, this.maxEventsPerTrace.toString()));
         this.tracesInLog =
         		Long.valueOf(line.getOptionValue(SIZE_PARAM_NAME, this.tracesInLog.toString()));
+		//added
+		this.negativesInLog =
+				Long.valueOf(line.getOptionValue(SIZE_NEGATIVE_PARAM_NAME, this.negativesInLog.toString()));
+		//added
+		this.leftAloneConstraints =
+				String.valueOf(line.getOptionValue(DEFAULT_LEFT_ALONE_CONSTRAINTS, this.leftAloneConstraints));
         this.outputEncoding = Encoding.valueOf(
-        		line.getOptionValue(OUT_ENC_PARAM_NAME, this.outputEncoding.toString())
-		);
+        		line.getOptionValue(OUT_ENC_PARAM_NAME, this.outputEncoding.toString()));
        	this.outputLogFile = openOutputFile(line, OUTPUT_FILE_PARAM_NAME);
 	}
     
@@ -162,6 +222,26 @@ public class LogMakerParameters extends ParamsManager {
 						.type(Long.class)
 						.build()
         );
+		// added
+		options.addOption(
+				Option.builder(SIZE_NEGATIVE_PARAM_NAME)
+						.hasArg().argName("number of negative traces")
+						.longOpt("size")
+						.desc("number of negative traces to simulate"
+						+ printDefault(DEFAULT_NEGATIVE_SIZE))
+						.type(Long.class)
+						.build()
+		);
+		// added
+		options.addOption(
+				Option.builder(LEFT_ALONE_CONSTRAINTS)
+						.hasArg().argName("constraints left alone")
+						.longOpt("const-left-alone")
+						.desc("constraints that are not violated"
+								+ printDefault(DEFAULT_LEFT_ALONE_CONSTRAINTS))
+						.type(String.class)
+						.build()
+		);
         options.addOption(
                 Option.builder(OUT_ENC_PARAM_NAME)
 						.hasArg().argName("language")
@@ -212,9 +292,15 @@ public class LogMakerParameters extends ParamsManager {
 			checkFailures.append("Maximum number of events per trace are specified to be less than the minimum\n");
 		if (tracesInLog < 0)
 			checkFailures.append("Negative number of traces specified\n");
+		// added
+		if (tracesInLog < negativesInLog)
+			checkFailures.append("Trying to negate more traces than there actually are\n");
+
 		if (outputLogFile != null && outputLogFile.isDirectory()) {
 			checkFailures.append("Directory specified in place of a file to save the log\n");
 		}
+
+		// for every constraints in the string check if it's valid.
 		
 		if (checkFailures.length() > 0)
 			return checkFailures.toString();

@@ -17,6 +17,16 @@ public class Absence extends AtMost1 {
     public String getLTLpfExpressionTemplate() {
     	return "G(!%1$s)"; // G(!a)
     }
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s]*([%1$s][^%1$s]*){1,}[^%1$s]*";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "F(%1$s)"; // F(a)
+	}
     
 	protected Absence() {
     	super();

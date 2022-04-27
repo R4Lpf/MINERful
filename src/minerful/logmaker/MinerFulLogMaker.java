@@ -94,6 +94,7 @@ public class MinerFulLogMaker {
 		
 		XTrace xTrace = null;
 		XEvent xEvent = null;
+		XEvent xEventNegative= null;
 		XConceptExtension concExtino = XConceptExtension.instance();
 		XLifecycleExtension lifeExtension = XLifecycleExtension.instance();
 		XTimeExtension timeExtension = XTimeExtension.instance();
@@ -110,17 +111,27 @@ public class MinerFulLogMaker {
 		Automaton automaton = processModel.buildAutomaton();
 		automaton = AutomatonUtils.limitRunLength(automaton, this.parameters.minEventsPerTrace, this.parameters.maxEventsPerTrace);
 
+		Automaton automatonNegative = processModel.buildNegativeAutomaton(this.parameters.leftAloneConstraints);
+		automatonNegative = AutomatonUtils.limitRunLength(automatonNegative, this.parameters.minEventsPerTrace, this.parameters.maxEventsPerTrace);
+
+		//Automaton automatonK = processModel.buildAutomaton();
+		//automatonK = AutomatonUtils.limitRunLength(automaton, 5, 5);
+
 		AutomatonRandomWalker walker = new AutomatonRandomWalker(automaton);
+
+		AutomatonRandomWalker walkerNegative = new AutomatonRandomWalker(automatonNegative);
+
+		//AutomatonRandomWalker walkerK = new AutomatonRandomWalker(automatonK);
 		
 		TaskChar firedTransition = null;
 		Character pickedTransitionChar = 0;
-		
+
 		Date currentDate = null;
 		int padder = (int)(Math.ceil(Math.log10(this.parameters.tracesInLog)));
 		String traceNameTemplate = "Synthetic trace no. " + (padder < 1 ? "" : "%0" + padder) + "d";
 		StringBuffer sBuf = new StringBuffer();
 
-		for (int traceNum = 0; traceNum < this.parameters.tracesInLog; traceNum++) {
+		for (int traceNum = 0; traceNum < this.parameters.tracesInLog - (int) (this.parameters.negativesInLog * (this.parameters.tracesInLog / 100)); traceNum++) {
 			sBuf.append("<");
 			walker.goToStart();
 			xTrace = xFactory.createTrace();
@@ -132,14 +143,43 @@ public class MinerFulLogMaker {
 			pickedTransitionChar = walker.walkOn();
 			while (pickedTransitionChar != null) {
 				firedTransition = processModel.getTaskCharArchive().getTaskChar(pickedTransitionChar);
-				if (traceNum < MAX_SIZE_OF_STRINGS_LOG) {
+				if (traceNum < this.parameters.tracesInLog - (int) (this.parameters.negativesInLog * (this.parameters.tracesInLog / 100))) {
 					sBuf.append(firedTransition + ",");
 				}
-				
+
 				currentDate = generateRandomDateTimeForLogEvent(currentDate);
 				xEvent = makeXEvent(xFactory, concExtino, lifeExtension, timeExtension, firedTransition, currentDate);
 				xTrace.add(xEvent);
 				pickedTransitionChar = walker.walkOn();
+			}
+			this.log.add(xTrace);
+			if (traceNum < this.parameters.tracesInLog-(int) (this.parameters.negativesInLog * (this.parameters.tracesInLog / 100))) {
+				this.stringsLog[traceNum] = sBuf.substring(0, Math.max(1, sBuf.length() -1)) + ">";
+				sBuf = new StringBuffer();
+			}
+		}
+
+
+		for (int traceNum = (int) (this.parameters.tracesInLog-(int) (this.parameters.negativesInLog * (this.parameters.tracesInLog / 100))); traceNum < this.parameters.tracesInLog; traceNum++) {
+			sBuf.append("<");
+			walkerNegative.goToStart();
+			xTrace = xFactory.createTrace();
+			concExtino.assignName(
+					xTrace,
+					String.format(traceNameTemplate, (traceNum))
+			);
+
+			pickedTransitionChar = walkerNegative.walkOn();
+			while (pickedTransitionChar != null) {
+				firedTransition = processModel.getTaskCharArchive().getTaskChar(pickedTransitionChar);
+				if (traceNum < MAX_SIZE_OF_STRINGS_LOG) {
+					sBuf.append(firedTransition + ",");
+				}
+
+				currentDate = generateRandomDateTimeForLogEvent(currentDate);
+				xEvent = makeXEvent(xFactory, concExtino, lifeExtension, timeExtension, firedTransition, currentDate);
+				xTrace.add(xEvent);
+				pickedTransitionChar = walkerNegative.walkOn();
 			}
 			this.log.add(xTrace);
 			if (traceNum < MAX_SIZE_OF_STRINGS_LOG) {

@@ -127,4 +127,26 @@ public class SequenceResponse32 extends Constraint {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "([^%1$s]*)|([^%1$s]*%1$s[^%2$s]*)|([^%1$s]*%1$s[^%2$s]*%2$s[^%3$s]*)|([^%1$s]*%1$s[^%2$s]*%2$s[^%3$s]*%3$s[^%4$s]*%4$s[^%5$s]*%5$s[^%1$s]*)";
+		// "([^A]*)|([^A]*A[^B]*)|([^A]*A[^B]*B[^C]*)|([^A]*A[^B]*B[^C]*C[^X]*X[^Y]*Y[^A]*)";
+	}
+
+	@Override
+	public String getNegativeRegularExpression() {
+		return String.format(this.getRegularExpressionTemplate(),
+				this.parameters.get(0).toPatternString(),
+				this.parameters.get(1).toPatternString(),
+				this.parameters.get(2).toPatternString(),
+				this.parameters.get(3).toPatternString(),
+				this.parameters.get(4).toPatternString()
+		);
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return null;
+	}
 }

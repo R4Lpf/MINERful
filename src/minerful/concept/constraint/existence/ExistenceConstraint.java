@@ -76,6 +76,12 @@ public abstract class ExistenceConstraint extends Constraint {
 		return null;
 	}
 
+    @Override
+    public String getNegativeRegularExpressionTemplate() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 	@Override
 	public Constraint suggestConstraintWhichThisShouldBeBasedUpon() {
 		// TODO Auto-generated method stub

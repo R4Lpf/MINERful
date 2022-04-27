@@ -22,8 +22,18 @@ public class NotChainSuccession extends NegativeRelationConstraint {
     public String getLTLpfExpressionTemplate() {
     	return "G((%1$s -> !X(%2$s)) & (%2$s -> !Y(%1$s)))"; // G((a -> !X(b)) & (b -> !Y(a)))
     }
-    
-    protected NotChainSuccession() {
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s%2$s]*([%1$s][%2$s][^%1$s%2$s]*)*[^%1$s%2$s]*";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "G((%1$s -> X(%2$s)) & (%2$s -> Y(%1$s)))"; // G((a -> X(b)) & (b -> Y(a)))
+	}
+
+	protected NotChainSuccession() {
     	super();
     }
 

@@ -14,16 +14,27 @@ import minerful.concept.constraint.ConstraintFamily.ConstraintImplicationVerse;
 @XmlRootElement
 public class Response extends RespondedExistence {
 
-    @Override
+	@Override
 	public String getRegularExpressionTemplate() {
 		return "[^%1$s]*([%1$s].*[%2$s])*[^%1$s]*";
 		// [^a]*(a.*b)*[^a]*
     }
-    
+
     @Override
     public String getLTLpfExpressionTemplate() {
-    	return "G(%1$s -> X(F(%2$s)))"; // G(a -> X(F(b)))
+
+		return "G(%1$s -> X(F(%2$s)))"; // G(a -> X(F(b)))
     }
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s]*([%1$s][^%2$s]*)*[^%1$s%2$s]*";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "G(%1$s -> !X(F(%2$s)))"; // G(a -> !X(F(b)))
+	}
     
     protected Response() {
     	super();

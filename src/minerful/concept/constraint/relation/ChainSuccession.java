@@ -21,6 +21,17 @@ public class ChainSuccession extends AlternateSuccession {
     public String getLTLpfExpressionTemplate() {
     	return "G((%1$s -> X(%2$s)) & (%2$s -> Y(%1$s)))"; // G((a -> X(b)) & (b -> Y(a)))
     }
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+//		return "[^%1$s]*([%1$s][%1$s]*[^%1$s%2$s][^%1$s]*)*([^%1$s]*|[%1$s])";
+		return "[^%1$s]*([%1$s][%1$s]*[^%1$s%2$s][^%1$s]*)*([^%1$s]*|[%1$s]*)";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "G((%1$s -> !X(%2$s)) & (%2$s -> !Y(%1$s)))"; // G((a -> !X(b)) & (b -> !Y(a)))
+	}
 	
     protected ChainSuccession() {
 		super();

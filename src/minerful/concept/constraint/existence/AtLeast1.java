@@ -13,13 +13,21 @@ public class AtLeast1 extends ExistenceConstraint {
 	public String getRegularExpressionTemplate() {
 		return "[^%1$s]*([%1$s][^%1$s]*){1,}[^%1$s]*";
 	}
-    
+
     @Override
     public String getLTLpfExpressionTemplate() {
     	return "F(%1$s)"; // F(a)
     }
- 
-    protected AtLeast1() {
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() { return "[^%1$s]*"; }
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "G(!%1$s)";// G(!a)
+	}
+
+	protected AtLeast1() {
     	super();
     }
 	

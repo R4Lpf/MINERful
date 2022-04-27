@@ -22,7 +22,17 @@ public class Choice extends MutualRelationConstraint {
     public String getLTLpfExpressionTemplate() {
     	return "F( a | b )"; // F( a | b )
     }
-  	
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+		return "[^%1$s%2$s]*([%1$s%2$s][^%1$s%2$s]*){1,}[^%1$s%2$s]*";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "F( a | b )"; // F( a | b )
+	}
+
 	protected Choice() {
 		super();
 	}

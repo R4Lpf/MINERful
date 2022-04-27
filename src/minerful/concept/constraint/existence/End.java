@@ -23,6 +23,14 @@ public class End extends AtLeast1 {
     	return "G(F(%1$s))"; // "G(F(a))"
     }
 
+	@Override
+	public String getNegativeRegularExpressionTemplate() { return ".*[^%1$s]"; }
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "G(F(!%1$s)"; // "G(F(a))"
+	}
+
 	protected End() {
     	super();
     }

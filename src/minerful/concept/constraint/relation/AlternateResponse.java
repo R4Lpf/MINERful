@@ -21,7 +21,18 @@ public class AlternateResponse extends Response {
     public String getLTLpfExpressionTemplate() {
     	return "G(%1$s -> X(!%1$s U %2$s))"; // G(a -> X(!a U b))
     }
- 	
+
+	@Override
+	public String getNegativeRegularExpressionTemplate() {
+//		return "[^%1$s]*([%1$s][%1$s]*[^%1$s%2$s][^%1$s]*)*([^%1$s]*|[%1$s])";
+		return "[^%1$s]*([%1$s][%1$s]*[^%1$s%2$s][^%1$s]*)*([^%1$s]*|[%1$s]*)";
+	}
+
+	@Override
+	public String getNegativeLTLpfExpressionTemplate() {
+		return "G(%1$s -> !X(%2$s))"; // G(a -> !X(b))
+	}
+
 	protected AlternateResponse() {
 		super();
 	}
