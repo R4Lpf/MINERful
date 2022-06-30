@@ -22,7 +22,7 @@ public class Exactly1 extends AtLeast1 { // Multiple inheritance is not allowed 
 	///////////////////////////// added by Ralph Angelo Almoneda ///////////////////////////////
 	@Override
 	public String getNegativeRegularExpressionTemplate() {
-		return "(?![^%1$s]*([%1$s][^%1$s]*){1,1}[^%1$s]*)";
+		return "([^%1$s]*([%1$s][^%1$s]*){2,}[^%1$s]*)|[^%1$s]*";
 	}
 	///////////////////////////// added by Ralph Angelo Almoneda ///////////////////////////////
 	@Override

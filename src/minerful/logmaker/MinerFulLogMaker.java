@@ -130,9 +130,9 @@ public class MinerFulLogMaker {
 		///////////////////////////////////////////////////////////////////////////////////////////////
 
 		///////////////////////////// added by Ralph Angelo Almoneda ///////////////////////////////
-		Automaton automatonNegative = processModel.buildNegativeAutomaton();
-		automatonNegative = AutomatonUtils.limitRunLength(automatonNegative, this.parameters.minEventsPerTrace, this.parameters.maxEventsPerTrace);
-		AutomatonRandomWalker walkerNegative = new AutomatonRandomWalker(automatonNegative);
+		Automaton automatonPositive = processModel.buildAutomaton();
+		automatonPositive = AutomatonUtils.limitRunLength(automatonPositive, this.parameters.minEventsPerTrace, this.parameters.maxEventsPerTrace);
+		AutomatonRandomWalker walkerPositive = new AutomatonRandomWalker(automatonPositive);
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
 		
@@ -145,7 +145,7 @@ public class MinerFulLogMaker {
 		StringBuffer sBuf = new StringBuffer();
 
 		///////////////////////////// modified by Ralph Angelo Almoneda ///////////////////////////////
-		for (int traceNum = 0; traceNum < this.parameters.tracesInLog - (int) (this.parameters.negativesInLog * (this.parameters.tracesInLog / 100)); traceNum++) {
+		for (int traceNum = (int) (this.parameters.tracesInLog - (int) (this.parameters.negativesInLog * (1))); traceNum < this.parameters.tracesInLog; traceNum++) {
 			sBuf.append("<");
 			walker.goToStart();
 			xTrace = xFactory.createTrace();
@@ -157,7 +157,7 @@ public class MinerFulLogMaker {
 			pickedTransitionChar = walker.walkOn();
 			while (pickedTransitionChar != null) {
 				firedTransition = processModel.getTaskCharArchive().getTaskChar(pickedTransitionChar);
-				if (traceNum < this.parameters.tracesInLog - (int) (this.parameters.negativesInLog * (this.parameters.tracesInLog / 100))) {
+				if (traceNum < MAX_SIZE_OF_STRINGS_LOG) {
 					sBuf.append(firedTransition + ",");
 				}
 
@@ -167,36 +167,36 @@ public class MinerFulLogMaker {
 				pickedTransitionChar = walker.walkOn();
 			}
 			this.log.add(xTrace);
-			if (traceNum < this.parameters.tracesInLog-(int) (this.parameters.negativesInLog * (this.parameters.tracesInLog / 100))) {
+			if (traceNum < MAX_SIZE_OF_STRINGS_LOG) {
 				this.stringsLog[traceNum] = sBuf.substring(0, Math.max(1, sBuf.length() -1)) + ">";
 				sBuf = new StringBuffer();
 			}
 		}
 
 
-		for (int traceNum = (int) (this.parameters.tracesInLog-(int) (this.parameters.negativesInLog * (this.parameters.tracesInLog / 100))); traceNum < this.parameters.tracesInLog; traceNum++) {
+		for (int traceNum = 0; traceNum < this.parameters.tracesInLog - (int) (this.parameters.negativesInLog * (1)); traceNum++) {
 			sBuf.append("<");
-			walkerNegative.goToStart();
+			walkerPositive.goToStart();
 			xTrace = xFactory.createTrace();
 			concExtino.assignName(
 					xTrace,
 					String.format(traceNameTemplate, (traceNum))
 			);
 
-			pickedTransitionChar = walkerNegative.walkOn();
+			pickedTransitionChar = walkerPositive.walkOn();
 			while (pickedTransitionChar != null) {
 				firedTransition = processModel.getTaskCharArchive().getTaskChar(pickedTransitionChar);
-				if (traceNum < MAX_SIZE_OF_STRINGS_LOG) {
+				if (traceNum < this.parameters.tracesInLog-(int) (this.parameters.negativesInLog * (1))) {
 					sBuf.append(firedTransition + ",");
 				}
 
 				currentDate = generateRandomDateTimeForLogEvent(currentDate);
 				xEvent = makeXEvent(xFactory, concExtino, lifeExtension, timeExtension, firedTransition, currentDate);
 				xTrace.add(xEvent);
-				pickedTransitionChar = walkerNegative.walkOn();
+				pickedTransitionChar = walkerPositive.walkOn();
 			}
 			this.log.add(xTrace);
-			if (traceNum < MAX_SIZE_OF_STRINGS_LOG) {
+			if (traceNum < this.parameters.tracesInLog-(int) (this.parameters.negativesInLog * (1))) {
 				this.stringsLog[traceNum] = sBuf.substring(0, Math.max(1, sBuf.length() -1)) + ">";
 				sBuf = new StringBuffer();
 			}
